@@ -1,0 +1,325 @@
+/* ERIKA Enterprise. */
+#include "ee.h"
+/* Arduino SDK. */
+#include "Arduino.h"
+
+/*
+ * Pin 13 has an LED connected on most Arduino boards.
+ */
+int led = 13;
+static int count=0;    // Message duration for 180s
+static int n=0;
+static char msg[5][70]={"A FEATHER IN THE HAND IS BETTER THAN A BIRD IN THE AIR.",
+		"A SHORT PENCIL IS USUALLY BETTER THAN A LONG MEMORY ANY DAY.",
+		"ACCEPT SOMETHING THAT YOU CANNOT CHANGE AND YOU WILL FEEL BETTER.",
+		"ADVENTURE CAN BE REAL HAPPINESS.",
+		"ALL THE EFFORT YOU ARE MAKING WILL ULTIMATELY PAY OFF."
+};
+/*
+ * TASK AND ISR2 MUST BE C SYMBOL
+ */
+
+extern "C" {
+
+/* TASKs */
+DeclareTask(task_sender);
+
+//functions declarations
+bool pause(char size);
+bool display_led(char arr[],char size);
+
+/* Idle Hook */
+extern void idle_hook(void);
+
+} /* extern "C" */
+
+void setup(void) {
+	/* initialize the digital pin as an output. */
+	pinMode(led, OUTPUT);
+	//Serial.begin(115200);
+	digitalWrite(led, LOW);
+}
+
+void idle_hook(void) {
+}
+
+int main(void) {
+	init();
+
+	setup();
+
+	StartOS(OSDEFAULTAPPMODE);
+
+	return 0;
+}
+
+/*
+ * TASK SENDER
+ */
+TASK(task_sender) {
+	static int i = 0;
+	static int j = 0;
+	static int tweet_break=0;
+	static int count=0;
+	static bool result=true;
+	static bool pause_result=true;
+	if (count==1800)  //180 seconds check
+	{	tweet_break=5;
+		count=0;
+		i=0;
+		n=0;
+		j=(j+1)%5;
+		result=true;
+		pause_result=true;
+		//Serial.print("\r\nTweet_changed\n");
+	}
+	if (tweet_break!=0){
+		digitalWrite(led, LOW);
+	//	Serial.print("delay\r");
+		tweet_break--;
+	}
+	else{
+		count++;
+		if (pause_result){
+			switch (msg[j][i]){
+			case 'A':
+				result=display_led("10111",5);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'B':
+				result=display_led("111010101",9);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'C':
+				result=display_led("11101011101",11);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'D':
+				result=display_led("1110101",7);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'E':
+				result=display_led("1",1);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'F':
+				result=display_led("101011101",9);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'G':
+				result=display_led("111011101",9);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'H':
+				result=display_led("1010101",7);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'I':
+				result=display_led("101",3);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'J':
+				result=display_led("1011101110111",13);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'K':
+				result=display_led("111010111",9);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'L':
+				result=display_led("101110101",9);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'M':
+				result=display_led("1110111",7);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'N':
+				result=display_led("11101",5);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'O':
+				result=display_led("11101110111",11);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'P':
+				result=display_led("10111011101",11);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'Q':
+				result=display_led("1110111010111",13);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'R':
+				result=display_led("1011101",7);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'S':
+				result=display_led("10101",5);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'T':
+				result=display_led("111",3);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'U':
+				result=display_led("1010111",7);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'V':
+				result=display_led("101010111",9);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'W':
+				result=display_led("101110111",9);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'X':
+				result=display_led("11101010111",11);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'Y':
+				result=display_led("1110101110111",13);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case 'Z':
+				result=display_led("11101110101",11);
+				if(result){
+					i++;
+					pause_result=false;
+				}
+				break;
+			case ' ':
+				result=pause(4);
+				if(result){
+					i++;
+				}
+				break;
+			case '.':
+				result=pause(4);
+				if(result){
+					i=0;
+					//Serial.print("repeat\n");
+				}
+				break;
+			}
+		}
+		else{
+			pause_result=pause(3);		// Inter codeword pause
+		}
+	}
+	TerminateTask();
+}
+
+
+//display function
+bool display_led(char arr[],char size){
+	if (arr[n]=='1'){
+		digitalWrite(led, HIGH);
+	//	Serial.print("1");
+	}
+	else{
+		digitalWrite(led, LOW);
+	//	Serial.print("0");
+	}
+		n++;
+		if(n==size){
+			n=0;
+			return true;
+		}
+		else
+			return false;
+}
+
+//Pause function
+bool pause(char size){
+	static int n=0;
+	digitalWrite(led, LOW);
+	//Serial.print("0");
+	n++;
+	if(n==size){
+		n=0;
+		return true;
+	}
+	else
+		return false;
+}
+
+
+A = thingSpeakRead(readChannelID,'Fields',AID,'DateRange',[datetime(2021,1,22,00,02,51),datetime(2021,1,22,12,55,04)]);
+B = thingSpeakRead(readChannelID,'Fields',BID,'DateRange',[datetime(2021,1,22,00,02,51),datetime(2021,1,22,12,55,04)]);

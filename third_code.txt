@@ -1,0 +1,168 @@
+/* ERIKA Enterprise. */
+#include "ee.h"
+#include <string.h>
+/* Arduino SDK. */
+#include "Arduino.h"
+
+/*
+ * Pin 13 has an LED connected on most Arduino boards.
+ */
+int led = 13;
+int count=0;    // Message duration for 180s
+static char msg[200];
+static char msg1[] =".- ..-.,.,.-,-,....,.,.-. ..,-. -,....,. ....,.-,-.,-.. ..,... -...,.,-,-,.,.-. -,....,.-,-. .- -...,..,.-.,-.. ..,-. -,....,. .-,..,.-. /";	// msg1
+static char msg2[] =".- ...,....,---,.-.,- .--.,.,-.,-.-.,..,.-.. ..,... ..-,...,..-,.-,.-..,.-..,-.-- -...,.,-,-,.,.-. -,....,.-,-. .- .-..,---,-.,--. --,.,--,---,.-.,-.-- .-,-.,-.-- -..,.-,-.-- /";	// msg2
+static char msg3[] =".-,-.-.,-.-.,.,.--.,- ...,---,--,.,-,....,..,-.,--. -,....,.-,- -.--,---,..- -.-.,.-,-.,-.,---,- -.-.,....,.-,-.,--.,. .-,-.,-.. -.--,---,..- .--,..,.-..,.-.. ..-.,.,.,.-.. -...,.,-,-,.,.-. /";	// msg3
+static char msg4[] =".-,-..,...-,.,-.,-,..-,.-.,. -.-.,.-,-. -...,. .-.,.,.-,.-.. ....,.-,.--.,.--.,..,-.,.,...,... /";	// msg4
+static char msg5[] =".-,.-..,.-.. -,....,. .,..-.,..-.,---,.-.,- -.--,---,..- .-,.-.,. --,.-,-.-,..,-.,--. .--,..,.-..,.-.. ..-,.-..,-,..,--,.-,-,.,.-..,-.-- .--.,.-,-.-- ---,..-.,..-. /";	// msg5
+/*
+ * TASK AND ISR2 MUST BE C SYMBOL
+ */
+
+extern "C" {
+
+/* TASKs */
+DeclareTask(task_sender);
+/* Idle Hook */
+
+void tweet_change();
+void led_on();
+void led_off();
+extern void idle_hook(void);
+
+} /* extern "C" */
+
+void setup(void) {
+	/* initialize the digital pin as an output. */
+	pinMode(led, OUTPUT);
+	digitalWrite(led, LOW);
+	//Serial.begin(115200);
+	tweet_change();
+}
+
+void idle_hook(void) {
+}
+
+int main(void) {
+	init();
+
+	setup();
+
+	StartOS(OSDEFAULTAPPMODE);
+
+	return 0;
+}
+
+/*
+ * TASK SENDER
+ */
+TASK(task_sender) {
+	static int i = 0;
+	static int index = 0;
+	static int msg_delay=0;
+	static int count=0;
+	if (count==1800)  //180 sec
+	{	tweet_change();
+		msg_delay=5;
+		count=0;
+		index=0;
+		i=0;
+	}
+	if (msg_delay!=0){
+		led_off();
+		msg_delay--;
+	}
+	else{
+		count++;
+		if(msg[i]=='/'){
+		//	Serial.print("\n");
+			i=0;
+		}
+		switch (msg[i]){
+		case '.':
+			if(index!=1){
+				led_on();
+				index++;
+			}
+			else{
+				led_off();
+				index=0;
+				i++;
+			}
+			break;
+		case '-':
+			if(index!=3){
+				led_on();
+				index++;
+			}
+			else{
+				led_off();
+				index=0;
+				i++;
+				}
+			break;
+		case ',':
+			led_off();
+			index++;
+			if (index==2){
+				index=0;
+				i++;
+			}
+			break;
+		case ' ':
+			led_off();
+			index++;
+			if (index==6){
+				index=0;
+				i++;
+			}
+			break;
+		default:
+			i=0;
+			break;
+		}
+	}
+	TerminateTask();
+}
+
+void led_on(){
+	digitalWrite(led, HIGH);
+	//Serial.print("1");
+}
+
+void led_off(){
+	digitalWrite(led, LOW);
+	//Serial.print("0");
+}
+
+
+void tweet_change(){
+	//	Serial.print("Tweet Change\n");
+	static int msg_num=0;
+		switch (msg_num){
+				case 0:
+					memcpy(&msg, &msg1, sizeof msg1);
+					msg_num++;
+					break;
+				case 1:
+					memcpy(&msg, &msg2, sizeof msg2);
+					msg_num++;
+					break;
+				case 2:
+					memcpy(&msg, &msg3, sizeof msg3);
+					msg_num++;
+					break;
+				case 3:
+					memcpy(&msg, &msg4, sizeof msg4);
+					msg_num++;
+					break;
+				case 4:
+					memcpy(&msg, &msg5, sizeof msg5);
+					msg_num=0;
+					break;
+				default:
+					msg_num=0;
+					break;
+				}
+}
+
